@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PlusDemic</title>
+   
+    <script>
+    (function(){
+        const styleTag = document.createElement("style");
+        styleTag.innerHTML = `body { opacity:0 !important; }`;
+        document.head.appendChild(styleTag);
+
+        const controlScript = document.createElement("script");
+        controlScript.innerHTML = `
+            function initalize_sxi_customization() {
+                try {
+                    let sxi_url_params = new URLSearchParams(window.location.search);
+                    let sxi_customized_body = document.body;
+
+                    if (!sxi_url_params.has("sxi_content")) {
+                        sxi_customized_body.style.setProperty("opacity", "100", "important");
+                        console.log("Changed SXI Personalized Body");
+                    }
+
+                    setTimeout(() => {
+                        let computedOpacity = getComputedStyle(document.body).opacity;
+
+                        if (computedOpacity === "" || computedOpacity === null || typeof computedOpacity === "undefined" || parseFloat(computedOpacity) < 1) {
+                            document.body.style.setProperty("opacity", "100", "important");
+                            console.log("Opacity was not updated correctly. Resetting to 100.");
+                        } else {
+                            console.log("Opacity already correctly set:", computedOpacity);
+                        }
+                    }, 3000);
+                } catch (err) {
+                    console.error("SXI script error:", err);
+                }
+            }
+
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                initalize_sxi_customization();
+            } else {
+                document.addEventListener("DOMContentLoaded", initalize_sxi_customization);
+            }
+        `;
+        document.head.appendChild(controlScript);
+
+        const preloadLink = document.createElement("link");
+        preloadLink.rel = "preload";
+        preloadLink.href = "https://cdn.jsdelivr.net/npm/@growthbook/growthbook/dist/bundles/auto.min.js";
+        preloadLink.as = "script";
+        preloadLink.fetchPriority = "high";
+        document.head.appendChild(preloadLink);
+
+        const growthBookScript = document.createElement("script");
+        growthBookScript.src = "https://cdn.jsdelivr.net/npm/@growthbook/growthbook/dist/bundles/auto.min.js";
+        growthBookScript.async = true;
+        growthBookScript.setAttribute("data-api-host", "https://cdn.growthbook.io");
+        growthBookScript.setAttribute("data-client-key", "sdk-iYZKE1X1Y0qQ7HF");
+        document.head.appendChild(growthBookScript);
+    })();
+</script>
+
+
+
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
