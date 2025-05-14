@@ -5,48 +5,64 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PlusDemic</title>
-   
+
     <script>
-    (function(){
+      (function () {
+        // Add initial style to hide body
         const styleTag = document.createElement("style");
-        styleTag.innerHTML = `body { opacity:0 !important; }`;
+        styleTag.innerHTML = `body { opacity: 0 !important; }`;
         document.head.appendChild(styleTag);
 
+        // Control script to handle sxi_content and opacity
         const controlScript = document.createElement("script");
         controlScript.innerHTML = `
-            function initalize_sxi_customization() {
-                try {
-                    let sxi_url_params = new URLSearchParams(window.location.search);
-                    let sxi_customized_body = document.body;
+          function initialize_sxi_customization() {
+            try {
+              const urlParams = new URLSearchParams(window.location.search);
+              const sxiContent = urlParams.get("sxi_content");
+              const body = document.body;
 
-                    if (!sxi_url_params.has("sxi_content")) {
-                        sxi_customized_body.style.setProperty("opacity", "100", "important");
-                        console.log("Changed SXI Personalized Body");
-                    }
+              // If no sxi_content, set opacity to 1
+              if (!sxiContent) {
+                body.style.setProperty("opacity", "1", "important");
+                console.log("No sxi_content found. Set body opacity to 1.");
+              }
 
-                    setTimeout(() => {
-                        let computedOpacity = getComputedStyle(document.body).opacity;
-
-                        if (computedOpacity === "" || computedOpacity === null || typeof computedOpacity === "undefined" || parseFloat(computedOpacity) < 1) {
-                            document.body.style.setProperty("opacity", "100", "important");
-                            console.log("Opacity was not updated correctly. Resetting to 100.");
-                        } else {
-                            console.log("Opacity already correctly set:", computedOpacity);
-                        }
-                    }, 3000);
-                } catch (err) {
-                    console.error("SXI script error:", err);
+              // Check opacity after 3 seconds
+              setTimeout(() => {
+                const computedOpacity = getComputedStyle(body).opacity;
+                if (!computedOpacity || parseFloat(computedOpacity) < 1) {
+                  body.style.setProperty("opacity", "1", "important");
+                  console.log("Opacity was not updated correctly. Reset to 1.");
+                } else {
+                  console.log("Opacity correctly set:", computedOpacity);
                 }
-            }
 
-            if (document.readyState === "complete" || document.readyState === "interactive") {
-                initalize_sxi_customization();
-            } else {
-                document.addEventListener("DOMContentLoaded", initalize_sxi_customization);
+                // Check if GrowthBook applied changes
+                if (window.growthbook) {
+                  console.log("GrowthBook initialized. Checking feature flags...");
+                  // Example: Log feature flag status (to be expanded in Step 3)
+                } else {
+                  console.log("GrowthBook not initialized.");
+                }
+              }, 3000);
+            } catch (err) {
+              console.error("SXI customization error:", err.message, err.stack);
+              // Ensure body is visible on error
+              document.body.style.setProperty("opacity", "1", "important");
             }
+          }
+
+          // Run script when DOM is ready
+          if (document.readyState === "complete" || document.readyState === "interactive") {
+            initialize_sxi_customization();
+          } else {
+            document.addEventListener("DOMContentLoaded", initialize_sxi_customization);
+          }
         `;
         document.head.appendChild(controlScript);
 
+        // Preload GrowthBook script
         const preloadLink = document.createElement("link");
         preloadLink.rel = "preload";
         preloadLink.href = "https://cdn.jsdelivr.net/npm/@growthbook/growthbook/dist/bundles/auto.min.js";
@@ -54,17 +70,15 @@
         preloadLink.fetchPriority = "high";
         document.head.appendChild(preloadLink);
 
+        // Load GrowthBook script
         const growthBookScript = document.createElement("script");
         growthBookScript.src = "https://cdn.jsdelivr.net/npm/@growthbook/growthbook/dist/bundles/auto.min.js";
         growthBookScript.async = true;
         growthBookScript.setAttribute("data-api-host", "https://cdn.growthbook.io");
         growthBookScript.setAttribute("data-client-key", "sdk-iYZKE1X1Y0qQ7HF");
         document.head.appendChild(growthBookScript);
-    })();
-</script>
-
-
-
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
