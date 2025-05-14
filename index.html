@@ -26,9 +26,11 @@
               if (!sxiContent) {
                 body.style.setProperty("opacity", "1", "important");
                 console.log("No sxi_content found. Set body opacity to 1.");
+              } else {
+                console.log("sxi_content found:", sxiContent, "Waiting for GrowthBook...");
               }
 
-              // Check opacity after 3 seconds
+              // Check opacity and GrowthBook after 3 seconds
               setTimeout(() => {
                 const computedOpacity = getComputedStyle(body).opacity;
                 if (!computedOpacity || parseFloat(computedOpacity) < 1) {
@@ -38,17 +40,16 @@
                   console.log("Opacity correctly set:", computedOpacity);
                 }
 
-                // Check if GrowthBook applied changes
+                // Check GrowthBook initialization
                 if (window.growthbook) {
-                  console.log("GrowthBook initialized. Checking feature flags...");
-                  // Example: Log feature flag status (to be expanded in Step 3)
+                  console.log("GrowthBook initialized. Feature flags:", window.growthbook.getFeatures());
                 } else {
-                  console.log("GrowthBook not initialized.");
+                  console.error("GrowthBook failed to initialize after 3 seconds.");
+                  body.style.setProperty("opacity", "1", "important");
                 }
               }, 3000);
             } catch (err) {
               console.error("SXI customization error:", err.message, err.stack);
-              // Ensure body is visible on error
               document.body.style.setProperty("opacity", "1", "important");
             }
           }
@@ -75,7 +76,11 @@
         growthBookScript.src = "https://cdn.jsdelivr.net/npm/@growthbook/growthbook/dist/bundles/auto.min.js";
         growthBookScript.async = true;
         growthBookScript.setAttribute("data-api-host", "https://cdn.growthbook.io");
-        growthBookScript.setAttribute("data-client-key", "sdk-iYZKE1X1Y0qQ7HF");
+        growthBookScript.setAttribute("data-client-key", "sdk-iYZKE1X1Y0qQ7HF"); // Replace with your actual client key
+        growthBookScript.onerror = () => {
+          console.error("Failed to load GrowthBook script.");
+          document.body.style.setProperty("opacity", "1", "important");
+        };
         document.head.appendChild(growthBookScript);
       })();
     </script>

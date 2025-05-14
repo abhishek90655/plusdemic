@@ -12,30 +12,32 @@ const Hero = () => {
   });
 
   useEffect(() => {
-    // Check for sxi_content in URL
+    console.log("HeroSection mounted. Initial heroContent:", heroContent);
     const urlParams = new URLSearchParams(window.location.search);
     const sxiContent = urlParams.get("sxi_content");
 
     if (sxiContent === "empty") {
-      // Empty content for testing
+      console.log("sxi_content=empty detected. Emptying content.");
       setHeroContent({
         title: "",
         description: "",
         buttonText: "",
       });
-    } else if (sxiContent && window.growthbook) {
-      // GrowthBook will handle dynamic content in Step 3
-      console.log("Waiting for GrowthBook to apply sxi_content:", sxiContent);
+    } else if (sxiContent) {
+      console.log("sxi_content present:", sxiContent, "Waiting for GrowthBook...");
+      // GrowthBook will handle content changes
+    } else {
+      console.log("No sxi_content. Keeping default content.");
     }
   }, []);
 
   return (
-    <section className="Hero-section">
+    <section className="Hero-section" style={{ minHeight: "650px", opacity: 1 }}>
       <div className="bg-brandWhite rounded-3xl container grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[650px]">
         {/* Text section */}
         <div className="flex flex-col justify-center xl:pr-40">
           <div className="mt-24 mb-10 md:mt-0 md:mb-0 space-y-6 text-center md:text-left">
-            {heroContent.title && (
+            {heroContent.title ? (
               <motion.h1
                 variants={SlideUp(0.2)}
                 whileInView={"animate"}
@@ -43,8 +45,10 @@ const Hero = () => {
                 className="text-5xl font-bold text-darkBlue"
                 dangerouslySetInnerHTML={{ __html: heroContent.title }}
               />
+            ) : (
+              <p className="text-lg text-gray-400">No title content available.</p>
             )}
-            {heroContent.description && (
+            {heroContent.description ? (
               <motion.p
                 variants={SlideUp(0.4)}
                 whileInView={"animate"}
@@ -53,8 +57,10 @@ const Hero = () => {
               >
                 {heroContent.description}
               </motion.p>
+            ) : (
+              <p className="text-lg text-gray-400">No description available.</p>
             )}
-            {heroContent.buttonText && (
+            {heroContent.buttonText ? (
               <motion.div
                 variants={SlideUp(0.6)}
                 whileInView={"animate"}
@@ -63,6 +69,8 @@ const Hero = () => {
               >
                 <button>{heroContent.buttonText}</button>
               </motion.div>
+            ) : (
+              <p className="text-lg text-gray-400">No button available.</p>
             )}
           </div>
         </div>
@@ -74,7 +82,7 @@ const Hero = () => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="flex items-center justify-center"
         >
-          <img src={HeroImage} alt="" />
+          <img src={HeroImage} alt="Hero Image" />
         </motion.div>
       </div>
     </section>
